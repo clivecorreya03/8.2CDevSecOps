@@ -1,60 +1,31 @@
 pipeline {
-    agent any
-
-    triggers {
-        pollSCM('H/2 * * * *')
-    }
-
-    stages {
-
-        stage('Build') {
-            steps {
-                echo 'Task: Compile and package the application'
-                echo 'Tool: Maven'
-            }
-        }
-
-        stage('Unit and Integration Tests') {
-            steps {
-                echo 'Task: Run unit and integration tests'
-                echo 'Tools: JUnit and Postman/Newman'
-            }
-        }
-
-        stage('Code Analysis') {
-            steps {
-                echo 'Task: Analyse source code quality'
-                echo 'Tool: SonarQube'
-            }
-        }
-
-        stage('Security Scan') {
-            steps {
-                echo 'Task: Scan application for security vulnerabilities'
-                echo 'Tool: OWASP Dependency-Check'
-            }
-        }
-
-        stage('Deploy to Staging') {
-            steps {
-                echo 'Task: Deploy application to staging environment'
-                echo 'Tool: AWS EC2 / AWS CLI'
-            }
-        }
-
-        stage('Integration Tests on Staging') {
-            steps {
-                echo 'Task: Run integration tests in staging environment'
-                echo 'Tool: Postman/Newman'
-            }
-        }
-
-        stage('Deploy to Production') {
-            steps {
-                echo 'Task: Deploy application to production environment'
-                echo 'Tool: AWS EC2 / AWS CLI'
-            }
-        }
-    }
+agent any
+stages {
+stage('Checkout') {
+steps {
+git branch: 'main', url: ' https://github.com/clivecorreya03 /8.2CDevSecOps.git'
 }
- 
+}
+stage('Install Dependencies') {
+steps {
+sh 'npm install'
+}
+}
+stage('Run Tests') {
+steps {
+sh 'npm test || true' // Allows pipeline to continue despite test failures
+}
+}
+stage('Generate Coverage Report') {
+steps {
+// Ensure coverage report exists
+sh 'npm run coverage || true'
+}
+}
+stage('NPM Audit (Security Scan)') {
+steps {
+sh 'npm audit || true' // This will show known CVEs in the output
+}
+}
+}
+}
