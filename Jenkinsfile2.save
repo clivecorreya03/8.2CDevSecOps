@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    environment {
+        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/clivecorreya03/8.2CDevSecOps.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'node --version'
+                sh 'npm --version'
+                sh 'npm install'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'npm test || true'
+            }
+        }
+
+        stage('Generate Coverage Report') {
+            steps {
+                sh 'npm run coverage || true'
+            }
+        }
+
+        stage('NPM Audit (Security Scan)') {
+            steps {
+                sh 'npm audit || true'
+            }
+        }
+    }
+}
+x
+
+
+
+

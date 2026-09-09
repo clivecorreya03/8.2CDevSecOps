@@ -1,41 +1,59 @@
 pipeline {
     agent any
 
-    environment{
-        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    triggers {
+        pollSCM('H/2 * * * *')
     }
 
     stages {
-        stage('Checkout') {
+
+        stage('Build') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/clivecorreya03/8.2CDevSecOps.git'
+                echo 'Task: Compile and package the application'
+                echo 'Tool: Maven'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Unit and Integration Tests') {
             steps {
-                sh 'npm install'
+                echo 'Task: Run unit and integration tests'
+                echo 'Tools: JUnit and Postman/Newman'
             }
         }
 
-        stage('Run Tests') {
+        stage('Code Analysis') {
             steps {
-                sh 'npm test || true'
+                echo 'Task: Analyse source code quality'
+                echo 'Tool: SonarQube'
             }
         }
 
-        stage('Generate Coverage Report') {
+        stage('Security Scan') {
             steps {
-                sh 'npm run coverage || true'
+                echo 'Task: Scan application for security vulnerabilities'
+                echo 'Tool: OWASP Dependency-Check'
             }
         }
 
-        stage('NPM Audit (Security Scan)') {
+        stage('Deploy to Staging') {
             steps {
-                sh 'npm audit || true'
+                echo 'Task: Deploy application to staging environment'
+                echo 'Tool: AWS EC2 / AWS CLI'
+            }
+        }
+
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Task: Run integration tests in staging environment'
+                echo 'Tool: Postman/Newman'
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo 'Task: Deploy application to production environment'
+                echo 'Tool: AWS EC2 / AWS CLI'
             }
         }
     }
-} 
- 
+}
